@@ -94,7 +94,7 @@ int main(int, char**)
 
 
         //Sending data for execution
-        frame_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(unsigned int)*,mat1,&err)
+//        frame_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(unsigned int)*,mat1,&err)
 
 
 
