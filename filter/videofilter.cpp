@@ -63,7 +63,7 @@ int main(int, char**)
                   (int) camera.get(CV_CAP_PROP_FRAME_HEIGHT));
 	//Size S =Size(1280,720);
 	cout << "SIZE:" << S << endl;
-    printf("S.height:%d\n" S.height);
+    printf("S.height:%d\n", S.height);
 	
     VideoWriter outputVideo;                                        // Open the output
         outputVideo.open(NAME, ex, 25, S, true);
