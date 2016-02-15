@@ -60,7 +60,8 @@ int main()
     program_buffer = (char*)malloc(program_size+1);
     program_buffer[program_size] = '\0';
     status = fread(program_buffer,sizeof(char),program_size,program_handle);
-    printf("bits read %d", status);
+	if(status == 0) printf("fread problem!\n");
+//    printf("bits read %d\n", status);
     fclose(program_handle);
 
     program = clCreateProgramWithSource(context,1,(const char**)&program_buffer, &program_size, &err);
@@ -78,17 +79,20 @@ int main()
     }   
 
     kernel = clCreateKernel(program,KERNEL_FUNC,&err);
+//	printf("err:%d invalid:%d", err, CL_INVALID_PROGRAM);
+//	printf("kernel created");
     queue = clCreateCommandQueue(context,device,0,&err);
+//	printf("queue created");	
 
     mat1_buff = clCreateBuffer(context,CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(float)*N*N,mat1,&err);
     mat2_buff = clCreateBuffer(context,CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(float)*N*N,mat2,&err);
     res_buff = clCreateBuffer(context,CL_MEM_WRITE_ONLY,sizeof(float)*N*N, NULL, &err);
+//	printf("buffer created");
 
-
-    clSetKernelArg(kernel,0,sizeof(cl_mem),&mat1_buff);
-    clSetKernelArg(kernel,1,sizeof(cl_mem),&mat2_buff);
-    clSetKernelArg(kernel,2,sizeof(cl_mem),&res_buff);
-    clSetKernelArg(kernel,3,sizeof(int),&N);
+    clSetKernelArg(kernel,1,sizeof(cl_mem),&mat1_buff);
+    clSetKernelArg(kernel,2,sizeof(cl_mem),&mat2_buff);
+    clSetKernelArg(kernel,3,sizeof(cl_mem),&res_buff);
+    clSetKernelArg(kernel,0,sizeof(int),&N);
 
     global_work_size = N*N;
     clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,0,NULL,NULL);
