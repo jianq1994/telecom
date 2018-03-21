@@ -64,6 +64,11 @@ int main()
     fclose(program_handle);
 
     program = clCreateProgramWithSource(context,1,(const char**)&program_buffer, &program_size, &err);
+    if (program == NULL)
+    {
+         printf("Program creation failed\n");
+         return 1;
+    }   
     free(program_buffer);
     clBuildProgram(program,0,NULL,NULL,NULL,NULL);
 
@@ -73,7 +78,6 @@ int main()
     mat1_buff = clCreateBuffer(context,CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(float)*N*N,mat1,&err);
     mat2_buff = clCreateBuffer(context,CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(float)*N*N,mat2,&err);
     res_buff = clCreateBuffer(context,CL_MEM_WRITE_ONLY,sizeof(float)*N*N, NULL, &err);
-    // N_buff = clCreateBuffer(context,CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int), &N, &err);
 
 
     clSetKernelArg(kernel,0,sizeof(cl_mem),&mat1_buff);
@@ -81,7 +85,6 @@ int main()
     clSetKernelArg(kernel,2,sizeof(cl_mem),&res_buff);
     clSetKernelArg(kernel,3,sizeof(int),&N);
 
-    // group_work_size = 64;
     global_work_size = N*N;
     clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,0,NULL,NULL);
 
