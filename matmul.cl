@@ -8,7 +8,7 @@ __kernel void matmul(__global const float* mat1,
     int j = index%N;
     result[index] = 0;
 
-    for(k=0;k<N;k++)
+    for(int k=0;k<N;k++)
     {
         result[index] += mat1[i*N+k] * mat2[k*N+j];
     }
