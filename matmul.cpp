@@ -15,14 +15,15 @@ int main()
     cl_device_id device;
     cl_context context;
     cl_command_queue queue;
-    cl_int i,err;
+    cl_int err;
 
     cl_program program;
     FILE *program_handle;
-    char *program_buffer, *program_log;
+    char *program_buffer;
     size_t program_size;
     cl_kernel kernel;
     size_t global_work_size, group_work_size;
+    size_t status;
 
 
     int N = MATRIX_SIZE;
@@ -45,7 +46,7 @@ int main()
     rewind(program_handle);
     program_buffer = (char*)malloc(program_size+1);
     program_buffer[program_size] = '\0';
-    fread(program_buffer,sizeof(char),program_size,program_handle);
+    status = fread(program_buffer,sizeof(char),program_size,program_handle);
     fclose(program_handle);
 
     program = clCreateProgramWithSource(context,1,(const char**)&program_buffer, &program_size, &err);
