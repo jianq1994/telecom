@@ -34,13 +34,14 @@ int main()
     char *program_buffer;
     size_t program_size;
     cl_kernel kernel;
-    size_t global_work_size, group_work_size;
+    size_t global_work_size;
     size_t status;
 
 
     int N = MATRIX_SIZE;
     float mat1[N*N], mat2[N*N], result[N*N];
     cl_mem mat1_buff, mat2_buff, res_buff;
+    cl_mem N_buff;
 
     for (int i = 0; i < N*N; ++i)
     {
@@ -71,18 +72,24 @@ int main()
 
     mat1_buff = clCreateBuffer(context,CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(float)*N*N,mat1,&err);
     mat2_buff = clCreateBuffer(context,CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(float)*N*N,mat2,&err);
-    res_buff = clCreateBuffer(context,CL_MEM_WRITE_ONLY,sizeof(float)*N*N, NULL, &err); 
+    res_buff = clCreateBuffer(context,CL_MEM_WRITE_ONLY,sizeof(float)*N*N, NULL, &err);
+    // N_buff = clCreateBuffer(context,CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int), &N, &err);
+
 
     clSetKernelArg(kernel,0,sizeof(cl_mem),&mat1_buff);
     clSetKernelArg(kernel,1,sizeof(cl_mem),&mat2_buff);
     clSetKernelArg(kernel,2,sizeof(cl_mem),&res_buff);
     clSetKernelArg(kernel,3,sizeof(int),&N);
 
-    group_work_size = 64;
+    // group_work_size = 64;
     global_work_size = N*N;
-    clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,&group_work_size,0,NULL,NULL);
+    clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,0,NULL,NULL);
 
     clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(float)*N*N,result,0,NULL,NULL);
+
+    print_mat(mat1);
+    print_mat(mat2);
+    print_mat(result);
 
     clReleaseCommandQueue(queue);
     clReleaseMemObject(mat1_buff);
@@ -92,9 +99,6 @@ int main()
     clReleaseKernel(kernel);
     clReleaseContext(context);
 
-    print_mat(mat1);
-    print_mat(mat2);
-    print_mat(result);
 
     return 0;
 }
