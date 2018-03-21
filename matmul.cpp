@@ -1,6 +1,6 @@
 #define PROGRAM_FILE "matmul.cl"
 #define KERNEL_FUNC "matmul"
-#define MATRIX_SIZE 1000
+#define MATRIX_SIZE 2
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +8,18 @@
 
 #include <CL/cl.h>
 
+
+void print_mat(float* mat)
+{
+    for (int i = 0; i < MATRIX_SIZE* MATRIX_SIZE; ++i)
+    {
+        printf("%.2f\t", mat[i]);
+        if (i%2 == 0)
+        {
+            printf("\n");
+        }
+    }
+}
 
 int main()
 {
@@ -79,6 +91,10 @@ int main()
     clReleaseProgram(program);
     clReleaseKernel(kernel);
     clReleaseContext(context);
+
+    print_mat(mat1);
+    print_mat(mat2);
+    print_mat(result);
 
     return 0;
 }
