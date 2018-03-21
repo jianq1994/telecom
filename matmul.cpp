@@ -25,7 +25,7 @@ int main()
     size_t global_work_size, group_work_size;
 
 
-    N = MATRIX_SIZE;
+    int N = MATRIX_SIZE;
     float mat1[N*N], mat2[N*N], result[N*N];
     cl_mem mat1_buff, mat2_buff, res_buff;
 
