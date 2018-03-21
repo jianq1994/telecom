@@ -47,6 +47,7 @@ int main()
     program_buffer = (char*)malloc(program_size+1);
     program_buffer[program_size] = '\0';
     status = fread(program_buffer,sizeof(char),program_size,program_handle);
+    if (status == -1) printf("fail to read!");
     fclose(program_handle);
 
     program = clCreateProgramWithSource(context,1,(const char**)&program_buffer, &program_size, &err);
@@ -63,7 +64,7 @@ int main()
     clSetKernelArg(kernel,0,sizeof(cl_mem),&mat1_buff);
     clSetKernelArg(kernel,1,sizeof(cl_mem),&mat2_buff);
     clSetKernelArg(kernel,2,sizeof(cl_mem),&res_buff);
-    clSetKernelArg(kernel,3,sizeof(float),&N);
+    clSetKernelArg(kernel,3,sizeof(int),&N);
 
     group_work_size = 64;
     global_work_size = N*N;
