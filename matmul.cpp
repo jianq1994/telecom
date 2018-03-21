@@ -70,7 +70,12 @@ int main()
          return 1;
     }   
     free(program_buffer);
-    clBuildProgram(program,0,NULL,NULL,NULL,NULL);
+    int success = clBuildProgram(program,0,NULL,NULL,NULL,NULL);
+    if(success!=CL_SUCCESS) 
+    {
+         printf("Program Build failed\n");
+         return 1;
+    }   
 
     kernel = clCreateKernel(program,KERNEL_FUNC,&err);
     queue = clCreateCommandQueue(context,device,0,&err);
