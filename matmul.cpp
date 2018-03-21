@@ -67,7 +67,7 @@ int main()
 
     group_work_size = 64;
     global_work_size = N*N;
-    clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,&group_work_size,NULL,0,NULL,NULL);
+    clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,&group_work_size,0,NULL,NULL);
 
     clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(float)*N*N,result,0,NULL,NULL);
 
