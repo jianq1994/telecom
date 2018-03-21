@@ -41,7 +41,7 @@ int main()
     int N = MATRIX_SIZE;
     float mat1[N*N], mat2[N*N], result[N*N];
     cl_mem mat1_buff, mat2_buff, res_buff;
-    cl_mem N_buff;
+    // cl_mem N_buff;
 
     for (int i = 0; i < N*N; ++i)
     {
