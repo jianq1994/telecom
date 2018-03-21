@@ -60,7 +60,7 @@ int main()
     program_buffer = (char*)malloc(program_size+1);
     program_buffer[program_size] = '\0';
     status = fread(program_buffer,sizeof(char),program_size,program_handle);
-    if (status == 0) printf("fail to read!");
+    printf("bits read %d", status);
     fclose(program_handle);
 
     program = clCreateProgramWithSource(context,1,(const char**)&program_buffer, &program_size, &err);
