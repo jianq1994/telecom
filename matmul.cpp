@@ -14,7 +14,7 @@ void print_mat(float* mat)
     for (int i = 0; i < MATRIX_SIZE* MATRIX_SIZE; ++i)
     {
         printf("%.2f\t", mat[i]);
-        if (i%2 == 0)
+        if ((i+1)%2 == 0)
         {
             printf("\n");
         }
