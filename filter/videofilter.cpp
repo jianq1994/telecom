@@ -8,26 +8,62 @@
 using namespace cv;
 using namespace std;
 #define SHOW
-void print_matrix(unsigned N, float * mat) {
-    for(unsigned k = 0; k < N*N; ++k) {
-        printf("%2f ", *(mat+k));
-        if ((k+1)%N == 0) {
-            printf("\n");
-        }
-    }
-}
-
 int main(int, char**)
 {
+
+    // Preparation for the cl device
+    // cl_platform_id platform;
+    // cl_device_id device;
+    // cl_context context;
+    // cl_command_queue queue;
+    // cl_int err;
+    // cl_program program;
+    // FILE* program_handle;
+    // char* program_buffer;
+    // size_t program_size;
+    // cl_kernel kernel;
+    // size_t global_work_size;
+    // size_t status;
+
+
+    // clGetPlatformIDs(1, &platform, NULL);
+    // clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU,1,&device,NULL);
+    // context = clCreateContext(NULL,1,&device,NULL,NULL,&err);
+    // program_handle = fopen(PROGRAM_FILE,"r");
+    // fseek(program_handle,0,SEEK_END);
+    // program_size = ftell(program_handle);
+    // rewind(program_handle);
+    // program_buffer = (char*)malloc(program_size+1);
+    // program_buffer[program_size] = '\0';
+    // status = fread(program_buffer,sizeof(char),program_size,program_handle);
+    // if(status == 0) printf("fread problem!\n");
+    // fclose(program_handle);
+
+    // program = clCreateProgramWithSource(context,1,(const char**)&program_buffer, &program_size,&err);
+    // if(program == NULL) printf("Program creation failed\n");
+    // free(program_buffer);
+    // int success = clBuildProgram(program,0,NULL,NULL,NULL,NULL);
+    // if(success!=CL_SUCCESS) printf("Program Build failed\n");
+    // kernel = clCreateKernel(program, KERNEL_FUC,&err);
+    // if(err!=CL_SUCCESS) printf("Kernel create failed\n");
+    // queue = clCreateCommandQueue(context,device,0,&err);
+    // if(err!=CL_SUCCESS) printf("Command queue create failed\n");
+    // cl_mem frame_buff, filter_buff, res_buff;
+
+
+
+    // Preparing the data
     VideoCapture camera("./bourne.mp4");
     if(!camera.isOpened())  // check if we succeeded
         return -1;
 
-    const string NAME = "./output_gpu.avi";   // Form the new name with container
+    const string NAME = "./output.avi";   // Form the new name with container
     int ex = static_cast<int>(CV_FOURCC('M','J','P','G'));
     Size S = Size((int) camera.get(CV_CAP_PROP_FRAME_WIDTH),    // Acquire input size
                   (int) camera.get(CV_CAP_PROP_FRAME_HEIGHT));
 	//Size S =Size(1280,720);
+	cout << "SIZE:" << S << endl;
+    printf("S.height:%d\n" S.height);
 	
     VideoWriter outputVideo;                                        // Open the output
         outputVideo.open(NAME, ex, 25, S, true);
@@ -44,71 +80,41 @@ int main(int, char**)
     #ifdef SHOW
     namedWindow(windowName); // Resizable window, might not work on Windows.
     #endif
-	
-	//unsigned char* inputarray = cameraFrame.data;
-	//printf("%s", *inputarray);
-	int width = S.width;
-	int height = S.height;	
-	printf("size of the image is %d, %d\n", width, height);
-
     while (true) {
         Mat cameraFrame,displayframe;
 		count=count+1;
 		if(count > 299) break;
         camera >> cameraFrame;
-		time (&start);
         Mat filterframe = Mat(cameraFrame.size(), CV_8UC3);
-        Mat grayframe,edge_x,edge_y,edge;
-		// create a mat with float number
-		Mat floatframe = Mat(cameraFrame.size(), CV_32FC1);
+        Mat grayframe,edge_x,edge_y,edge,edge_inv;
+    	cvtColor(cameraFrame, grayframe, CV_BGR2GRAY);
+		time (&start);
 
-//		unsigned char* inputarray = cameraFrame.data;
-//    	printf("%d", *inputarray); 		
-//		memcpy(cameraFrame.data, inputarray, 3*width*height );
 
-		// cvtColor : turn cameraFrame to grayframe, defined by CV_BGR2GRAY
-	   	cvtColor(cameraFrame, grayframe, CV_BGR2GRAY);
-		
-		// get the grayframe size by int
-		int h = grayframe.size.p[0];
-		int w = grayframe.size.p[1];		
-		// create a matrix
-		float *image = (float *) malloc(sizeof(float)*h*w);		
-		for (int i=0; i < h*w; ++i) {
-			*(image + i) = (float) grayframe.data[i];			
-		}
-		printf("the first 5 element is \n");
-		for (int i =0; i< 5; ++i) {
-			printf("%f  ",image[i]);	
-		}
 
-		// convert grayframe to floatframe
-		grayframe.convertTo(floatframe, CV_32FC1);
-		//printf("%d, %d \n", w, h );
-		//printf("%f \n", *((float *)floatframe.data) );
-		//cout << floatframe.data << endl;
-		
-//		Mat g_kernel = floatframe.getGaussianKernel(3, 3, 50, 50);
-//		cout << g_kernel << endl;
-		
-		int k_row = 3;
-        int k_col = 3;
-        float g_kernel[9] = {1,2,1, 2, 4, 2, 1,2,1};
-        printf("the kernel is :\n");
-        print_matrix(3, g_kernel);		
-		
-		// blur the image with various low pass filters (LPF) or customer defined images
-		// high pass filters helps in findign edges in the images
-		// gaussian blur specifies the (input, output, size, deviation_x, deviation_y) 
-    	GaussianBlur(grayframe, grayframe, Size(3,3),0,0);
-    	GaussianBlur(grayframe, grayframe, Size(3,3),0,0);
-    	GaussianBlur(grayframe, grayframe, Size(3,3),0,0);
-		// edge detection (inputarray, outputarray, deepth, dx,dy, scale, delta, )
-		Scharr(grayframe, edge_x, CV_8U, 0, 1, 1, 0, BORDER_DEFAULT );
-		Scharr(grayframe, edge_y, CV_8U, 1, 0, 1, 0, BORDER_DEFAULT );
+
+        //Sending data for execution
+        frame_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(unsigned int)*,mat1,&err)
+
+
+
+
+  //   	GaussianBlur(grayframe, grayframe, Size(3,3),0,0);
+  //   	GaussianBlur(grayframe, grayframe, Size(3,3),0,0);
+  //   	GaussianBlur(grayframe, grayframe, Size(3,3),0,0);
+		// Scharr(grayframe, edge_x, CV_8U, 0, 1, 1, 0, BORDER_DEFAULT );
+		// Scharr(grayframe, edge_y, CV_8U, 1, 0, 1, 0, BORDER_DEFAULT );
+
+
+
 		addWeighted( edge_x, 0.5, edge_y, 0.5, 0, edge );
+        threshold(edge, edge, 80, 255, THRESH_BINARY_INV);
 		time (&end);
-        cvtColor(edge, displayframe, CV_GRAY2BGR);
+        cvtColor(edge, edge_inv, CV_GRAY2BGR);
+    	// Clear the output image to black, so that the cartoon line drawings will be black (ie: not drawn).
+    	memset((char*)displayframe.data, 0, displayframe.step * displayframe.rows);
+		grayframe.copyTo(displayframe,edge);
+        cvtColor(displayframe, displayframe, CV_GRAY2BGR);
 		outputVideo << displayframe;
 	#ifdef SHOW
         imshow(windowName, displayframe);
