@@ -84,6 +84,7 @@ int main(int, char**)
     float input[S.area()];
     float xedgeFilter[3][3] = {{-1,0,1},{-1,0,1},{-1,0,1}};
     // int yedgeFilter[3][3] = {{-1,-1,-1},{0,0,0},{1,1,1}};
+    float GauFilter[3][3] = {{0.95,1.18,0.95},{1.18,1.48,1.18},{0.95,1.18,0.95}};
 
     xfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(float)*9,xedgeFilter,&err);
     // yfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int)*9,yedgeFilter,&err);
@@ -140,6 +141,23 @@ int main(int, char**)
         clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,&write_event[0],kernel_event);
         clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(int)*S.area(),output,1,kernel_event,NULL);
 
+        for (int i = 0; i < S.area(); ++i)
+        {
+            input[i] = output[i];
+        }
+
+        status_p = clEnqueueWriteBuffer(queue, frame_buff, CL_FALSE,
+            0, sizeof(float)*S.area(),input, 0, NULL, write_event);
+        if(status_p) printf("Failed to write input");
+
+
+        clSetKernelArg(kernel,0,sizeof(int),&S.width);
+        clSetKernelArg(kernel,1,sizeof(int),&S.height);
+        clSetKernelArg(kernel,2,sizeof(cl_mem),&frame_buff);
+        clSetKernelArg(kernel,3,sizeof(cl_mem),&Gaufilter_buff);
+        clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
+        clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,&write_event[0],kernel_event);
+        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(int)*S.area(),output,1,kernel_event,NULL);
 
 
         memcpy(newframe.data, output, 3*S.area());
