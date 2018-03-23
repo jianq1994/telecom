@@ -56,6 +56,7 @@ int main(int, char**)
     queue = clCreateCommandQueue(context,device,0,&err);
     if(err!=CL_SUCCESS) printf("Command queue create failed\n");
     cl_mem frame_buff, xfilter_buff, res_buff;
+    cl_event write_event[1],kernel_event[1];
 
 
 
@@ -117,7 +118,6 @@ int main(int, char**)
 
         // Sending data for execution
         // printf("S.area: %d\n", S.area());
-        cl_event write_event[1],kernel_event[1];
 
         status_p = clEnqueueWriteBuffer(queue, frame_buff, CL_FALSE,
             0, sizeof(unsigned int)*S.area(),grayframe.data, 0, NULL, write_event);
