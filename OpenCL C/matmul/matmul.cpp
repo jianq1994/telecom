@@ -36,7 +36,8 @@ int main()
     cl_kernel kernel;
     size_t global_work_size;
     size_t status;
-
+    time_t start,end;
+    double diff;
 
     int N = MATRIX_SIZE;
     float mat1[N*N], mat2[N*N], result[N*N];
@@ -46,7 +47,24 @@ int main()
     {
         mat1[i] = float(rand());
         mat2[i] = float(rand());
+        result[i] = 0;
     }
+
+    time(&start);
+    for (int i = 0; i < N; ++i)
+    {
+        for (int j = 0; j < N; ++j)
+        {
+            for (int k = 0; k < N; ++k)
+            {
+                result[i*N+j] += mat1[i*N+k]*mat2[k*N+j]
+            }
+        }
+    }
+    time(&end);
+    diff = difftime(end,start);
+    printf("CPU used %.2ds time.\n", diff);    
+
 
     clGetPlatformIDs(1, &platform, NULL);
     clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU,1,&device,NULL);
@@ -76,6 +94,7 @@ int main()
          printf("Program Build failed\n");
          return 1;
     }   
+    time(&start);
 
     kernel = clCreateKernel(program,KERNEL_FUNC,&err);
     if (err != CL_SUCCESS) printf("Create kernel failed\n");
@@ -96,7 +115,9 @@ int main()
     clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,0,NULL,NULL);
 
     clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(float)*N*N,result,0,NULL,NULL);
-
+    time(&end);
+    diff = difftime(end,start);
+    printf("GPU used %.2ds time.\n", diff);        
     //verifying the results:
     // print_mat(mat1);
     // print_mat(mat2);
