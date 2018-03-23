@@ -50,7 +50,7 @@ int main(int, char**)
     free(program_buffer);
     int success = clBuildProgram(program,0,NULL,NULL,NULL,NULL);
     if(success!=CL_SUCCESS) printf("Program Build failed\n");
-    kernel = clCreateKernel(program, KERNEL_FUC,&err);
+    kernel = clCreateKernel(program, KERNEL_FUNC,&err);
     if(err!=CL_SUCCESS) printf("Kernel create failed\n");
     queue = clCreateCommandQueue(context,device,0,&err);
     if(err!=CL_SUCCESS) printf("Command queue create failed\n");
@@ -59,8 +59,8 @@ int main(int, char**)
 
 
     // Preparing the data
-    xedgeFilter[3][3] = {{-1,0,1},{-1,0,1},{-1,0,1}};
-    yedgeFilter[3][3] = {{-1,-1,-1},{0,0,0},{1,1,1}};
+    int xedgeFilter[3][3] = {{-1,0,1},{-1,0,1},{-1,0,1}};
+    int yedgeFilter[3][3] = {{-1,-1,-1},{0,0,0},{1,1,1}};
 
     xfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int)*9,xedgeFilter,&err);
     // yfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int)*9,yedgeFilter,&err);
