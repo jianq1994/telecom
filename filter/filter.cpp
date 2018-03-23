@@ -117,7 +117,7 @@ int main(int, char**)
 
         // Sending data for execution
         // printf("S.area: %d\n", S.area());
-        cl_event write_event[1];
+        cl_event write_event[1],kernel_event;
 
         status_p = clEnqueueWriteBuffer(queue, frame_buf, CL_FALSE,
             0, sizeof(unsigned int)*S.area() grayframe.data, 0, NULL, write_event);
@@ -130,8 +130,8 @@ int main(int, char**)
         clSetKernelArg(kernel,3,sizeof(cl_mem),&xfilter_buff);
         clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
 
-        clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,write_event,NULL);
-        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(unsigned int)*S.area(),edge_x.data,0,NULL,NULL);
+        clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,write_event,kernel_event);
+        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(unsigned int)*S.area(),edge_x.data,1,kernel_event,NULL);
 
 
 
