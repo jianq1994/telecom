@@ -61,11 +61,6 @@ int main(int, char**)
 
 
     // Preparing the data
-    int xedgeFilter[3][3] = {{-1,0,1},{-1,0,1},{-1,0,1}};
-    // int yedgeFilter[3][3] = {{-1,-1,-1},{0,0,0},{1,1,1}};
-
-    xfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int)*9,xedgeFilter,&err);
-    // yfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int)*9,yedgeFilter,&err);
 
     VideoCapture camera("./bourne.mp4");
     if(!camera.isOpened())  // check if we succeeded
@@ -80,13 +75,18 @@ int main(int, char**)
     // printf("S.height:%d\n", S.height);
     global_work_size = S.area();
     frame_buff = clCreateBuffer(context, CL_MEM_READ_ONLY,
-       sizeof(unsigned int)*S.area(), NULL, &status_p);
+       sizeof(float)*S.area(), NULL, &status_p);
     if(status_p) printf("Failed to create buffer for result");    
     res_buff = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
-       sizeof(int)*S.area(), NULL, &status_p);
+       sizeof(float)*S.area(), NULL, &status_p);
     if(status_p) printf("Failed to create buffer for result");
-    int output[S.area()];
+    float output[S.area()];
+    float input[S.area()];
+    float xedgeFilter[3][3] = {{-1,0,1},{-1,0,1},{-1,0,1}};
+    // int yedgeFilter[3][3] = {{-1,-1,-1},{0,0,0},{1,1,1}};
 
+    xfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(float)*9,xedgeFilter,&err);
+    // yfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int)*9,yedgeFilter,&err);
 
 
 	
@@ -120,9 +120,14 @@ int main(int, char**)
         // Sending data for execution
         // printf("S.area: %d\n", S.area());
 
+        for (int i = 0; i < S.area(); ++i)
+        {
+            input[i] = float(grayframe.data[i])
+        }
+
         status_p = clEnqueueWriteBuffer(queue, frame_buff, CL_FALSE,
-            0, sizeof(unsigned int)*S.area(),grayframe.data, 0, NULL, write_event);
-        if(status_p) printf("Failed to transfer input A");
+            0, sizeof(float)*S.area(),input, 0, NULL, write_event);
+        if(status_p) printf("Failed to write input");
 
 
         clSetKernelArg(kernel,0,sizeof(int),&S.width);
