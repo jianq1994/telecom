@@ -13,7 +13,7 @@ using namespace std;
 int main(int, char**)
 {
 
-    Preparation for the cl device
+    // Preparation for the cl device
     cl_platform_id platform;
     cl_device_id device;
     cl_context context;
