@@ -1,8 +1,8 @@
 __kernel void filter(const int width, const int height, __global const float* frame, __global const float* filter, __global float* restrict result)
 {
     int index = get_global_id(0);
-    int i = index / width;
-    int j = index % width;
+    int i = index % width;
+    int j = index / width;
 
     result[index] = 0;
 
