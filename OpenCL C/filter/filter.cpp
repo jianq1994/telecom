@@ -180,7 +180,7 @@ int main(int, char**)
         clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(float)*S.area(),output1,1,kernel_event,NULL);
 
 
-        memcpy(newframe.data, output1, S.area());
+        memcpy(newframe.data, output1, 4*S.area());
 
 
   //   	GaussianBlur(grayframe, grayframe, Size(3,3),0,0);
