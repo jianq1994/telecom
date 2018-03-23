@@ -7,52 +7,60 @@
 
 using namespace cv;
 using namespace std;
+#define PROGRAM_FILE "filter.cl"
+#define KERNEL_FUNC "filter"
 #define SHOW
 int main(int, char**)
 {
 
-    // Preparation for the cl device
-    // cl_platform_id platform;
-    // cl_device_id device;
-    // cl_context context;
-    // cl_command_queue queue;
-    // cl_int err;
-    // cl_program program;
-    // FILE* program_handle;
-    // char* program_buffer;
-    // size_t program_size;
-    // cl_kernel kernel;
-    // size_t global_work_size;
-    // size_t status;
+    Preparation for the cl device
+    cl_platform_id platform;
+    cl_device_id device;
+    cl_context context;
+    cl_command_queue queue;
+    cl_int err;
+    cl_program program;
+    FILE* program_handle;
+    char* program_buffer;
+    size_t program_size;
+    cl_kernel kernel;
+    size_t global_work_size;
+    size_t status;
 
 
-    // clGetPlatformIDs(1, &platform, NULL);
-    // clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU,1,&device,NULL);
-    // context = clCreateContext(NULL,1,&device,NULL,NULL,&err);
-    // program_handle = fopen(PROGRAM_FILE,"r");
-    // fseek(program_handle,0,SEEK_END);
-    // program_size = ftell(program_handle);
-    // rewind(program_handle);
-    // program_buffer = (char*)malloc(program_size+1);
-    // program_buffer[program_size] = '\0';
-    // status = fread(program_buffer,sizeof(char),program_size,program_handle);
-    // if(status == 0) printf("fread problem!\n");
-    // fclose(program_handle);
+    clGetPlatformIDs(1, &platform, NULL);
+    clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU,1,&device,NULL);
+    context = clCreateContext(NULL,1,&device,NULL,NULL,&err);
+    program_handle = fopen(PROGRAM_FILE,"r");
+    fseek(program_handle,0,SEEK_END);
+    program_size = ftell(program_handle);
+    rewind(program_handle);
+    program_buffer = (char*)malloc(program_size+1);
+    program_buffer[program_size] = '\0';
+    status = fread(program_buffer,sizeof(char),program_size,program_handle);
+    if(status == 0) printf("fread problem!\n");
+    fclose(program_handle);
 
-    // program = clCreateProgramWithSource(context,1,(const char**)&program_buffer, &program_size,&err);
-    // if(program == NULL) printf("Program creation failed\n");
-    // free(program_buffer);
-    // int success = clBuildProgram(program,0,NULL,NULL,NULL,NULL);
-    // if(success!=CL_SUCCESS) printf("Program Build failed\n");
-    // kernel = clCreateKernel(program, KERNEL_FUC,&err);
-    // if(err!=CL_SUCCESS) printf("Kernel create failed\n");
-    // queue = clCreateCommandQueue(context,device,0,&err);
-    // if(err!=CL_SUCCESS) printf("Command queue create failed\n");
-    // cl_mem frame_buff, filter_buff, res_buff;
+    program = clCreateProgramWithSource(context,1,(const char**)&program_buffer, &program_size,&err);
+    if(program == NULL) printf("Program creation failed\n");
+    free(program_buffer);
+    int success = clBuildProgram(program,0,NULL,NULL,NULL,NULL);
+    if(success!=CL_SUCCESS) printf("Program Build failed\n");
+    kernel = clCreateKernel(program, KERNEL_FUC,&err);
+    if(err!=CL_SUCCESS) printf("Kernel create failed\n");
+    queue = clCreateCommandQueue(context,device,0,&err);
+    if(err!=CL_SUCCESS) printf("Command queue create failed\n");
+    cl_mem frame_buff, filter_buff, res_buff;
 
 
 
     // Preparing the data
+    xedgeFilter[3][3] = {{-1,0,1},{-1,0,1},{-1,0,1}};
+    yedgeFilter[3][3] = {{-1,-1,-1},{0,0,0},{1,1,1}};
+
+    xfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int)*9,xedgeFilter,&err);
+    // yfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int)*9,yedgeFilter,&err);
+
     VideoCapture camera("./bourne.mp4");
     if(!camera.isOpened())  // check if we succeeded
         return -1;
@@ -63,7 +71,10 @@ int main(int, char**)
                   (int) camera.get(CV_CAP_PROP_FRAME_HEIGHT));
 	//Size S =Size(1280,720);
 	cout << "SIZE:" << S << endl;
-    printf("S.height:%d\n", S.height);
+    // printf("S.height:%d\n", S.height);
+    global_work_size = S.area();
+
+
 	
     VideoWriter outputVideo;                                        // Open the output
         outputVideo.open(NAME, ex, 25, S, true);
@@ -92,9 +103,21 @@ int main(int, char**)
 
 
 
+        // Sending data for execution
+        printf("S.area: %d\n", S.area());
+        frame_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(unsigned int)*S.area(),grayframe.data,&err);
+        res_buff = clCreateBuffer(context,CL_MEM_WRITE_ONLY,sizeof(unsigned int)*S.area(), NULL, &err);
 
-        //Sending data for execution
-//        frame_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(unsigned int)*,mat1,&err)
+        clSetKernelArg(kernel,0,sizeof(int),&S.width);
+        clSetKernelArg(kernel,1,sizeof(int),&S.height);
+        clSetKernelArg(kernel,2,sizeof(cl_mem),&frame_buff);
+        clSetKernelArg(kernel,3,sizeof(cl_mem),&xfilter_buff);
+        clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
+
+        clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,0,NULL,NULL);
+        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(unsigned int)*S.area(),edge_x.data,0,NULL,NULL)
+
+
 
 
 
