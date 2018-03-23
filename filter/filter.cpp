@@ -163,6 +163,14 @@ int main(int, char**)
 		// diff = difftime (end,start);
 		// tot+=diff;
 	}
+    clReleaseEvent(write_event[0]);
+    clReleaseEvent(kernel_event[0]);
+    clReleaseCommandQueue(queue);
+    clReleaseMemObject(frame_buff);
+    clReleaseMemObject(res_buff);
+    clReleaseMemObject(xfilter_buff);
+    clReleaseProgram(program);
+    clReleaseContext(context);
 	outputVideo.release();
 	camera.release();
   	// printf ("FPS %.2lf .\n", 299.0/tot );
