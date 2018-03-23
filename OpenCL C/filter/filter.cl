@@ -17,7 +17,7 @@ __kernel void filter(const int width, const int height, __global const float* fr
             result[index] += filter[2][2] * frame[index + width + 1];
             return 0;
         }
-        elif(j == width - 1)
+        else if(j == width - 1)
         {
             result[index] += filter[1][1] * frame[index];
             result[index] += filter[1][0] * frame[index-1];
