@@ -82,7 +82,7 @@ int main(int, char**)
        sizeof(unsigned int)*S.area(), NULL, &status_p);
     if(status_p) printf("Failed to create buffer for result");    
     res_buff = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
-       sizeof(int)*S.area(), NULL, &status_p);
+       sizeof(float)*S.area(), NULL, &status_p);
     if(status_p) printf("Failed to create buffer for result");
 
 
@@ -109,10 +109,10 @@ int main(int, char**)
 		if(count > 299) break;
         camera >> cameraFrame;
         Mat filterframe = Mat(cameraFrame.size(), CV_8UC3);
-        Mat grayframe,edge_x,edge_y,edge,edge_inv;
+        Mat grayframe;
     	cvtColor(cameraFrame, grayframe, CV_BGR2GRAY);
 		time (&start);
-
+        Mat newframe = Mat(S.height,S.width,CV_32FC1);
 
 
         // Sending data for execution
@@ -131,7 +131,7 @@ int main(int, char**)
         clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
 
         clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,&write_event[0],kernel_event);
-        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(int)*S.area(),edge_x.data,1,kernel_event,NULL);
+        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(float)*S.area(),newframe.data,1,kernel_event,NULL);
 
 
 
@@ -146,14 +146,16 @@ int main(int, char**)
 
 
 
-		addWeighted( edge_x, 0.5, edge_y, 0.5, 0, edge );
-        threshold(edge, edge, 80, 255, THRESH_BINARY_INV);
-		time (&end);
-        cvtColor(edge, edge_inv, CV_GRAY2BGR);
-    	// Clear the output image to black, so that the cartoon line drawings will be black (ie: not drawn).
-    	memset((char*)displayframe.data, 0, displayframe.step * displayframe.rows);
-		grayframe.copyTo(displayframe,edge);
-        cvtColor(displayframe, displayframe, CV_GRAY2BGR);
+		// addWeighted( edge_x, 0.5, edge_y, 0.5, 0, edge );
+  //       threshold(edge, edge, 80, 255, THRESH_BINARY_INV);
+		// time (&end);
+  //       cvtColor(edge, edge_inv, CV_GRAY2BGR);
+  //   	// Clear the output image to black, so that the cartoon line drawings will be black (ie: not drawn).
+  //   	memset((char*)displayframe.data, 0, displayframe.step * displayframe.rows);
+
+
+		newframe.convertTo(grayframe,CV_8U);
+        cvtColor(grayframe, displayframe, CV_GRAY2BGR);
 		outputVideo << displayframe;
 	#ifdef SHOW
         imshow(windowName, displayframe);
