@@ -97,9 +97,10 @@ int main()
 
     clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(float)*N*N,result,0,NULL,NULL);
 
-    print_mat(mat1);
-    print_mat(mat2);
-    print_mat(result);
+    //verifying the results:
+    // print_mat(mat1);
+    // print_mat(mat2);
+    // print_mat(result);
 
     clReleaseCommandQueue(queue);
     clReleaseMemObject(mat1_buff);
