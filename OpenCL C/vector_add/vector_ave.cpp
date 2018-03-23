@@ -169,11 +169,11 @@ int status;
 // Verify results.
 bool pass = true;
 
-for(unsigned int i=0;i<N;i++)
-{
-	printf("%f\t",input_a[i]);
-}
-printf("\n");
+// for(unsigned int i=0;i<N;i++)
+// {
+// 	printf("%f\t",input_a[i]);
+// }
+// printf("\n");
 if(pass) printf("The average is: %.2f", output[0]/N);
 
 
