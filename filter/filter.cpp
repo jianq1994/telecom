@@ -119,8 +119,8 @@ int main(int, char**)
         // printf("S.area: %d\n", S.area());
         cl_event write_event[1],kernel_event;
 
-        status_p = clEnqueueWriteBuffer(queue, frame_buf, CL_FALSE,
-            0, sizeof(unsigned int)*S.area() grayframe.data, 0, NULL, write_event);
+        status_p = clEnqueueWriteBuffer(queue, frame_buff, CL_FALSE,
+            0, sizeof(unsigned int)*S.area(),grayframe.data, 0, NULL, write_event);
         if(status_p) printf("Failed to transfer input A");
 
 
