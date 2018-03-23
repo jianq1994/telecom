@@ -111,7 +111,7 @@ int main(int, char**)
         Mat filterframe = Mat(cameraFrame.size(), CV_8UC3);
         Mat grayframe;
     	cvtColor(cameraFrame, grayframe, CV_BGR2GRAY);
-		time (&start);
+		// time (&start);
         Mat newframe = Mat(S.height,S.width,CV_32FC1);
 
 
@@ -160,8 +160,8 @@ int main(int, char**)
 	#ifdef SHOW
         imshow(windowName, displayframe);
 	#endif
-		diff = difftime (end,start);
-		tot+=diff;
+		// diff = difftime (end,start);
+		// tot+=diff;
 	}
 	outputVideo.release();
 	camera.release();
