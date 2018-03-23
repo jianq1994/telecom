@@ -80,10 +80,10 @@ int main(int, char**)
     global_work_size = S.area();
     frame_buff = clCreateBuffer(context, CL_MEM_READ_ONLY,
        sizeof(unsigned int)*S.area(), NULL, &status_p);
-    checkError(status_p, "Failed to create buffer for frame");
+    if(status_p) printf("Failed to create buffer for result");    
     res_buff = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
        sizeof(unsigned int)*S.area(), NULL, &status_p);
-    checkError(status_p, "Failed to create buffer for result");
+    if(status_p) printf("Failed to create buffer for result");
 
 
 
@@ -121,7 +121,7 @@ int main(int, char**)
 
         status_p = clEnqueueWriteBuffer(queue, frame_buf, CL_FALSE,
             0, sizeof(unsigned int)*S.area() grayframe.data, 0, NULL, write_event);
-        checkError(status_p, "Failed to transfer input A");
+        if(status_p) printf("Failed to transfer input A");
 
 
         clSetKernelArg(kernel,0,sizeof(int),&S.width);
