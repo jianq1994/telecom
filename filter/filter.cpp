@@ -54,13 +54,13 @@ int main(int, char**)
     if(err!=CL_SUCCESS) printf("Kernel create failed\n");
     queue = clCreateCommandQueue(context,device,0,&err);
     if(err!=CL_SUCCESS) printf("Command queue create failed\n");
-    cl_mem frame_buff, filter_buff, res_buff;
+    cl_mem frame_buff, xfilter_buff, res_buff;
 
 
 
     // Preparing the data
     int xedgeFilter[3][3] = {{-1,0,1},{-1,0,1},{-1,0,1}};
-    int yedgeFilter[3][3] = {{-1,-1,-1},{0,0,0},{1,1,1}};
+    // int yedgeFilter[3][3] = {{-1,-1,-1},{0,0,0},{1,1,1}};
 
     xfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int)*9,xedgeFilter,&err);
     // yfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int)*9,yedgeFilter,&err);
@@ -119,7 +119,7 @@ int main(int, char**)
         clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
 
         clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,0,NULL,NULL);
-        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(unsigned int)*S.area(),edge_x.data,0,NULL,NULL)
+        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(unsigned int)*S.area(),edge_x.data,0,NULL,NULL);
 
 
 
