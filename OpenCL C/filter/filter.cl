@@ -10,8 +10,7 @@ __kernel void filter(const int width, const int height, __global const float* fr
     {
         for (int l = -1; l < 2; ++l)
         {
-            if(i+k<0 || i+k>width-1 || j+k<0 || j+k>height-1) continue;
-
+            if(i+k<0 || i+k>width-1 || j+l<0 || j+l>height-1) continue;
             result[index] += filter[(k+1)*3+l+1]*frame[index+k+l*width];
         }
     }
