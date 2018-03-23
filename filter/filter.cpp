@@ -4,6 +4,10 @@
 #include <fstream>
 #include <time.h>
 #include "opencv2/opencv.hpp"
+#include <sys/types.h>
+
+#include <CL/cl.h>
+
 
 using namespace cv;
 using namespace std;
