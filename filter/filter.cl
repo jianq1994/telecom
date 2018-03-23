@@ -20,7 +20,7 @@ __kernel void filter(const int width, const int height, __global const unsigned 
             int k_col = (j-1) + col; 
             if ( k_row >= 0 && k_row < height && k_col >= 0 && k_col < width)
             {
-                result[pivol] += x[k] * y[3*i+j];
+                result[pivol] += frame[k] * filter[3*i+j];
             }
             else
             {
