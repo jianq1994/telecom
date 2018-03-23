@@ -58,7 +58,7 @@ int main()
         {
             for (int k = 0; k < N; ++k)
             {
-                result[i*N+j] += mat1[i*N+k]*mat2[k*N+j]
+                result[i*N+j] += mat1[i*N+k]*mat2[k*N+j];
             }
         }
     }
