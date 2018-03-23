@@ -130,7 +130,7 @@ int main(int, char**)
         clSetKernelArg(kernel,3,sizeof(cl_mem),&xfilter_buff);
         clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
 
-        clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,write_event,kernel_event);
+        clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,&write_event[0],kernel_event);
         clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(unsigned int)*S.area(),edge_x.data,1,kernel_event,NULL);
 
 
