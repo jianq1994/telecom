@@ -7,35 +7,35 @@ __kernel void filter(const int width, const int height, __global const float* fr
     result[index] = 0;
 
 
-    // if(i == 0)
-    // {
-    //     if(j == 0)
-    //     {
-    //         result[index] += filter[1][1] * frame[index];
-    //         result[index] += filter[1][2] * frame[index+1];
-    //         result[index] += filter[2][1] * frame[index + width];
-    //         result[index] += filter[2][2] * frame[index + width + 1];
-    //         return 0;
-    //     }
-    //     elif(j == width - 1)
-    //     {
-    //         result[index] += filter[1][1] * frame[index];
-    //         result[index] += filter[1][0] * frame[index-1];
-    //         result[index] += filter[2][0] * frame[index + width - 1];
-    //         result[index] += filter[2][1] * frame[index + width];
-    //         return 0;
-    //     }
-    //     else
-    //     {
-    //         result[index] += filter[1][1] * frame[index];
-    //         result[index] += filter[1][2] * frame[index+1];
-    //         result[index] += filter[2][1] * frame[index + width];
-    //         result[index] += filter[2][2] * frame[index + width + 1];
-    //         result[index] += filter[1][0] * frame[index-1];
-    //         result[index] += filter[2][0] * frame[index + width - 1]; 
-    //         return 0;                       
-    //     }
-    // }
+    if(i == 0)
+    {
+        if(j == 0)
+        {
+            result[index] += filter[1][1] * frame[index];
+            result[index] += filter[1][2] * frame[index+1];
+            result[index] += filter[2][1] * frame[index + width];
+            result[index] += filter[2][2] * frame[index + width + 1];
+            return 0;
+        }
+        elif(j == width - 1)
+        {
+            result[index] += filter[1][1] * frame[index];
+            result[index] += filter[1][0] * frame[index-1];
+            result[index] += filter[2][0] * frame[index + width - 1];
+            result[index] += filter[2][1] * frame[index + width];
+            return 0;
+        }
+        else
+        {
+            result[index] += filter[1][1] * frame[index];
+            result[index] += filter[1][2] * frame[index+1];
+            result[index] += filter[2][1] * frame[index + width];
+            result[index] += filter[2][2] * frame[index + width + 1];
+            result[index] += filter[1][0] * frame[index-1];
+            result[index] += filter[2][0] * frame[index + width - 1]; 
+            return 0;                       
+        }
+    }
     // elif(i == height -1)
     // {
     //     if(j == 0)
