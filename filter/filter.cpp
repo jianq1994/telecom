@@ -83,7 +83,7 @@ int main(int, char**)
        sizeof(unsigned int)*S.area(), NULL, &status_p);
     if(status_p) printf("Failed to create buffer for result");    
     res_buff = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
-       sizeof(float)*S.area(), NULL, &status_p);
+       sizeof(int)*S.area(), NULL, &status_p);
     if(status_p) printf("Failed to create buffer for result");
 
 
@@ -131,7 +131,7 @@ int main(int, char**)
         clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
 
         clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,&write_event[0],kernel_event);
-        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(float)*S.area(),newframe.data,1,kernel_event,NULL);
+        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(int)*S.area(),newframe.data,1,kernel_event,NULL);
 
 
 
