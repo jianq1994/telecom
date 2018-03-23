@@ -105,7 +105,8 @@ int main(int, char**)
     #ifdef SHOW
     namedWindow(windowName); // Resizable window, might not work on Windows.
     #endif
-    while (true) {
+    while (true) 
+    {
         Mat cameraFrame,displayframe;
 		count=count+1;
 		if(count > 299) break;
@@ -122,7 +123,7 @@ int main(int, char**)
 
         for (int i = 0; i < S.area(); ++i)
         {
-            input[i] = float(grayframe.data[i])
+            input[i] = float(grayframe.data[i]);
         }
 
         status_p = clEnqueueWriteBuffer(queue, frame_buff, CL_FALSE,
