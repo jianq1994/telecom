@@ -41,7 +41,6 @@ int main()
     int N = MATRIX_SIZE;
     float mat1[N*N], mat2[N*N], result[N*N];
     cl_mem mat1_buff, mat2_buff, res_buff;
-    // cl_mem N_buff;
 
     for (int i = 0; i < N*N; ++i)
     {
@@ -79,15 +78,14 @@ int main()
     }   
 
     kernel = clCreateKernel(program,KERNEL_FUNC,&err);
-//	printf("err:%d invalid:%d", err, CL_INVALID_PROGRAM);
-//	printf("kernel created");
+    if (err != CL_SUCCESS) printf("Create kernel failed\n");
     queue = clCreateCommandQueue(context,device,0,&err);
-//	printf("queue created");	
+    if (err != CL_SUCCESS) printf("Create queue failed\n");
 
     mat1_buff = clCreateBuffer(context,CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(float)*N*N,mat1,&err);
     mat2_buff = clCreateBuffer(context,CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(float)*N*N,mat2,&err);
     res_buff = clCreateBuffer(context,CL_MEM_WRITE_ONLY,sizeof(float)*N*N, NULL, &err);
-//	printf("buffer created");
+    if (err != CL_SUCCESS) printf("Create buffer failed\n");    
 
     clSetKernelArg(kernel,1,sizeof(cl_mem),&mat1_buff);
     clSetKernelArg(kernel,2,sizeof(cl_mem),&mat2_buff);
