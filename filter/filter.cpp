@@ -89,7 +89,7 @@ int main(int, char**)
         return -1;
     }
 	time_t start,end;
-	double diff,tot;
+	double diff,tot = 0;
 	int count=0;
 	const char *windowName = "filter";   // Name shown in the GUI window.
     #ifdef SHOW
