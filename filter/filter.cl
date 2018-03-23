@@ -6,19 +6,19 @@ __kernel void filter(const int width, const int height, __global const unsigned 
 
     // result[index] = 0;
 
-    int col = index % weight;
-    int row = index / weight;
-    int pivol = col + row*weight;
+    int col = index % width;
+    int row = index / width;
+    int pivol = col + row*width;
 
     result[pivol] = 0;
     for(int i = 0; i < 3; ++i) 
     {
         for (int j =0; j < 3; ++j) 
         {
-            int k = pivol + (i - 1) * weight + (j -1);
+            int k = pivol + (i - 1) * width + (j -1);
             int k_row = (i-1) + row;
             int k_col = (j-1) + col; 
-            if ( k_row >= 0 && k_row < height && k_col >= 0 && k_col < weight)
+            if ( k_row >= 0 && k_row < height && k_col >= 0 && k_col < width)
             {
                 result[pivol] += x[k] * y[3*i+j];
             }
