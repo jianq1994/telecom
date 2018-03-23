@@ -55,7 +55,7 @@ int main(int, char**)
     if(err!=CL_SUCCESS) printf("Kernel create failed\n");
     queue = clCreateCommandQueue(context,device,0,&err);
     if(err!=CL_SUCCESS) printf("Command queue create failed\n");
-    cl_mem frame_buff, xfilter_buff, res_buff, Gaufilter_buff;
+    cl_mem frame_buff, xfilter_buff, yfilter_buff ,res_buff, Gaufilter_buff;
     cl_event write_event[1],kernel_event[1];
 
 
@@ -80,14 +80,14 @@ int main(int, char**)
     res_buff = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
        sizeof(float)*S.area(), NULL, &status_p);
     if(status_p) printf("Failed to create buffer for result");
-    float output[S.area()];
+    float output1[S.area()], output2[S.area()];
     float input[S.area()];
     float xedgeFilter[3][3] = {{-1,0,1},{-1,0,1},{-1,0,1}};
-    // int yedgeFilter[3][3] = {{-1,-1,-1},{0,0,0},{1,1,1}};
+    float yedgeFilter[3][3] = {{-1,-1,-1},{0,0,0},{1,1,1}};
     float GauFilter[3][3] = {{0.95,1.18,0.95},{1.18,1.48,1.18},{0.95,1.18,0.95}};
 
     xfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(float)*9,xedgeFilter,&err);
-    // yfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int)*9,yedgeFilter,&err);
+    yfilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(int)*9,yedgeFilter,&err);
     Gaufilter_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(float)*9,GauFilter,&err);
 
 
@@ -141,11 +141,29 @@ int main(int, char**)
         clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
 
         clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,&write_event[0],kernel_event);
-        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(int)*S.area(),output,1,kernel_event,NULL);
+        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(int)*S.area(),output1,1,kernel_event,NULL);
+
+
+
+
+        status_p = clEnqueueWriteBuffer(queue, frame_buff, CL_FALSE,
+            0, sizeof(float)*S.area(),input, 0, NULL, write_event);
+        if(status_p) printf("Failed to write input");
+
+
+        clSetKernelArg(kernel,0,sizeof(int),&S.width);
+        clSetKernelArg(kernel,1,sizeof(int),&S.height);
+        clSetKernelArg(kernel,2,sizeof(cl_mem),&frame_buff);
+        clSetKernelArg(kernel,3,sizeof(cl_mem),&yfilter_buff);
+        clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
+        clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,&write_event[0],kernel_event);
+        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(int)*S.area(),output2,1,kernel_event,NULL);
+
+
 
         for (int i = 0; i < S.area(); ++i)
         {
-            input[i] = output[i];
+            input[i] = output1[i] + output2[i];
         }
 
         status_p = clEnqueueWriteBuffer(queue, frame_buff, CL_FALSE,
@@ -159,10 +177,10 @@ int main(int, char**)
         clSetKernelArg(kernel,3,sizeof(cl_mem),&Gaufilter_buff);
         clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
         clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,&write_event[0],kernel_event);
-        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(int)*S.area(),output,1,kernel_event,NULL);
+        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(int)*S.area(),output1,1,kernel_event,NULL);
 
 
-        memcpy(newframe.data, output, 3*S.area());
+        memcpy(newframe.data, output1, 3*S.area());
 
 
   //   	GaussianBlur(grayframe, grayframe, Size(3,3),0,0);
