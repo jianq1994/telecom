@@ -113,7 +113,7 @@ int main(int, char**)
         Mat grayframe;
     	cvtColor(cameraFrame, grayframe, CV_BGR2GRAY);
 		// time (&start);
-        Mat newframe = Mat(S.height,S.width,CV_32FC1);
+        Mat newframe = Mat(cameraFrame.size(),CV_32FC1);
 
 
         // Sending data for execution
