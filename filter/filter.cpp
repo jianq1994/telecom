@@ -55,7 +55,7 @@ int main(int, char**)
     if(err!=CL_SUCCESS) printf("Kernel create failed\n");
     queue = clCreateCommandQueue(context,device,0,&err);
     if(err!=CL_SUCCESS) printf("Command queue create failed\n");
-    cl_mem frame_buff, xfilter_buff, res_buff;
+    cl_mem frame_buff, xfilter_buff, res_buff, Gaufilter_buff;
     cl_event write_event[1],kernel_event[1];
 
 
