@@ -109,7 +109,7 @@ int main(int, char**)
 		count=count+1;
 		if(count > 299) break;
         camera >> cameraFrame;
-        Mat filterframe = Mat(cameraFrame.size(), CV_8UC3);
+        // Mat filterframe = Mat(cameraFrame.size(), CV_8UC3);
         Mat grayframe;
     	cvtColor(cameraFrame, grayframe, CV_BGR2GRAY);
 		// time (&start);
