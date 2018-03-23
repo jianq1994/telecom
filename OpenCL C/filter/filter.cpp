@@ -141,7 +141,7 @@ int main(int, char**)
         clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
 
         clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,&write_event[0],kernel_event);
-        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(int)*S.area(),output1,1,kernel_event,NULL);
+        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(float)*S.area(),output1,1,kernel_event,NULL);
 
 
 
@@ -157,7 +157,7 @@ int main(int, char**)
         clSetKernelArg(kernel,3,sizeof(cl_mem),&yfilter_buff);
         clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
         clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,&write_event[0],kernel_event);
-        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(int)*S.area(),output2,1,kernel_event,NULL);
+        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(float)*S.area(),output2,1,kernel_event,NULL);
 
 
 
@@ -177,10 +177,10 @@ int main(int, char**)
         clSetKernelArg(kernel,3,sizeof(cl_mem),&Gaufilter_buff);
         clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
         clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,&write_event[0],kernel_event);
-        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(int)*S.area(),output1,1,kernel_event,NULL);
+        clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(float)*S.area(),output1,1,kernel_event,NULL);
 
 
-        memcpy(newframe.data, output1, 3*S.area());
+        memcpy(newframe.data, output1, S.area());
 
 
   //   	GaussianBlur(grayframe, grayframe, Size(3,3),0,0);
