@@ -121,7 +121,6 @@ int status;
          return 1;
 	}	
      int success=clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
-	 printf("hello world");
 	 if(success!=CL_SUCCESS) print_clbuild_errors(program,device);
      kernel = clCreateKernel(program, "vector_ave", NULL);
  // Input buffers.
@@ -174,7 +173,7 @@ bool pass = true;
 // 	printf("%f\t",input_a[i]);
 // }
 // printf("\n");
-if(pass) printf("The average is: %.2f", output[0]/N);
+if(pass) printf("The average is: %.2f\n", output[0]/N);
 
 
     // Release local events.
