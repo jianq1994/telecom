@@ -1,10 +1,33 @@
 __kernel void filter(const int width, const int height, __global const unsigned int* frame, __global const unsigned int* filter, __global unsigned int* restrict result)
 {
-    int index = get_global_id(0);
-    int i = index / width;
-    int j = index % width;
+    // int index = get_global_id(0);
+    // int i = index / width;
+    // int j = index % width;
 
-    result[index] = 0;
+    // result[index] = 0;
+
+    int col = index % weight;
+    int row = index / weight;
+    int pivol = col + row*weight;
+
+    result[pivol] = 0;
+    for(int i = 0; i < 3; ++i) 
+    {
+        for (int j =0; j < 3; ++j) 
+        {
+            int k = pivol + (i - 1) * weight + (j -1);
+            int k_row = (i-1) + row;
+            int k_col = (j-1) + col; 
+            if ( k_row >= 0 && k_row < height && k_col >= 0 && k_col < weight)
+            {
+                result[pivol] += x[k] * y[3*i+j];
+            }
+            else
+            {
+                result[pivol] += 0;
+            }
+        }
+    }
 
     // if(i == 0)
     // {
