@@ -117,7 +117,7 @@ int main(int, char**)
 
         // Sending data for execution
         // printf("S.area: %d\n", S.area());
-        cl_event write_event[1],kernel_event;
+        cl_event write_event[1],kernel_event[1];
 
         status_p = clEnqueueWriteBuffer(queue, frame_buff, CL_FALSE,
             0, sizeof(unsigned int)*S.area(),grayframe.data, 0, NULL, write_event);
