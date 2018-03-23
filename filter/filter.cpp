@@ -96,8 +96,8 @@ int main(int, char**)
         cout  << "Could not open the output video for write: " << NAME << endl;
         return -1;
     }
-	time_t start,end;
-	double diff,tot = 0;
+	// time_t start,end;
+	// double diff,tot = 0;
 	int count=0;
 	const char *windowName = "filter";   // Name shown in the GUI window.
     #ifdef SHOW
@@ -165,7 +165,7 @@ int main(int, char**)
 	}
 	outputVideo.release();
 	camera.release();
-  	printf ("FPS %.2lf .\n", 299.0/tot );
+  	// printf ("FPS %.2lf .\n", 299.0/tot );
 
     return EXIT_SUCCESS;
 
