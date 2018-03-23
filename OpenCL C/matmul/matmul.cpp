@@ -64,7 +64,7 @@ int main()
     }
     time(&end);
     diff = difftime(end,start);
-    printf("CPU used %.2ds time.\n", diff);    
+    printf("CPU used %.2fs time.\n", diff);    
 
 
     clGetPlatformIDs(1, &platform, NULL);
@@ -118,7 +118,7 @@ int main()
     clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(float)*N*N,result,0,NULL,NULL);
     time(&end);
     diff = difftime(end,start);
-    printf("GPU used %.2ds time.\n", diff);        
+    printf("GPU used %.2fs time.\n", diff);        
     //verifying the results:
     // print_mat(mat1);
     // print_mat(mat2);
