@@ -1,6 +1,6 @@
 __kernel void filter(const int width, const int height, __global const unsigned int* frame, __global const unsigned int* filter, __global unsigned int* restrict result)
 {
-    // int index = get_global_id(0);
+    int index = get_global_id(0);
     // int i = index / width;
     // int j = index % width;
 
