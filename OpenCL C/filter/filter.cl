@@ -6,6 +6,7 @@ __kernel void filter(const int width, const int height, __global const float* fr
 
     result[index] = 0;
 
+    printf("%d\t",index);
 
     if(i == 0)
     {
