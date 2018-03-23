@@ -30,6 +30,7 @@ int main(int, char**)
     cl_kernel kernel;
     size_t global_work_size;
     size_t status;
+    int status_p;
 
 
     clGetPlatformIDs(1, &platform, NULL);
@@ -78,11 +79,11 @@ int main(int, char**)
     // printf("S.height:%d\n", S.height);
     global_work_size = S.area();
     frame_buff = clCreateBuffer(context, CL_MEM_READ_ONLY,
-       sizeof(unsigned int)*S.area(), NULL, &status);
-    checkError(status, "Failed to create buffer for frame");
+       sizeof(unsigned int)*S.area(), NULL, &status_p);
+    checkError(status_p, "Failed to create buffer for frame");
     res_buff = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
-       sizeof(unsigned int)*S.area(), NULL, &status);
-    checkError(status, "Failed to create buffer for result");
+       sizeof(unsigned int)*S.area(), NULL, &status_p);
+    checkError(status_p, "Failed to create buffer for result");
 
 
 
@@ -118,9 +119,9 @@ int main(int, char**)
         // printf("S.area: %d\n", S.area());
         cl_event write_event[1];
 
-        status = clEnqueueWriteBuffer(queue, frame_buf, CL_FALSE,
+        status_p = clEnqueueWriteBuffer(queue, frame_buf, CL_FALSE,
             0, sizeof(unsigned int)*S.area() grayframe.data, 0, NULL, write_event);
-        checkError(status, "Failed to transfer input A");
+        checkError(status_p, "Failed to transfer input A");
 
 
         clSetKernelArg(kernel,0,sizeof(int),&S.width);
