@@ -77,6 +77,13 @@ int main(int, char**)
 	cout << "SIZE:" << S << endl;
     // printf("S.height:%d\n", S.height);
     global_work_size = S.area();
+    frame_buff = clCreateBuffer(context, CL_MEM_READ_ONLY,
+       sizeof(unsigned int)*S.area(), NULL, &status);
+    checkError(status, "Failed to create buffer for frame");
+    res_buff = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
+       sizeof(unsigned int)*S.area(), NULL, &status);
+    checkError(status, "Failed to create buffer for result");
+
 
 
 	
@@ -108,9 +115,13 @@ int main(int, char**)
 
 
         // Sending data for execution
-        printf("S.area: %d\n", S.area());
-        frame_buff = clCreateBuffer(context, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR,sizeof(unsigned int)*S.area(),grayframe.data,&err);
-        res_buff = clCreateBuffer(context,CL_MEM_WRITE_ONLY,sizeof(unsigned int)*S.area(), NULL, &err);
+        // printf("S.area: %d\n", S.area());
+        cl_event write_event[1];
+
+        status = clEnqueueWriteBuffer(queue, frame_buf, CL_FALSE,
+            0, sizeof(unsigned int)*S.area() grayframe.data, 0, NULL, write_event);
+        checkError(status, "Failed to transfer input A");
+
 
         clSetKernelArg(kernel,0,sizeof(int),&S.width);
         clSetKernelArg(kernel,1,sizeof(int),&S.height);
@@ -118,7 +129,7 @@ int main(int, char**)
         clSetKernelArg(kernel,3,sizeof(cl_mem),&xfilter_buff);
         clSetKernelArg(kernel,4,sizeof(cl_mem),&res_buff);
 
-        clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,0,NULL,NULL);
+        clEnqueueNDRangeKernel(queue,kernel,1,NULL, &global_work_size,NULL,1,write_event,NULL);
         clEnqueueReadBuffer(queue,res_buff,CL_TRUE,0,sizeof(unsigned int)*S.area(),edge_x.data,0,NULL,NULL);
 
 
