@@ -136,7 +136,7 @@ int main(int, char**)
 
 
 
-        memcpy(newframe.data, output, 3*S.area())
+        memcpy(newframe.data, output, 3*S.area());
 
 
   //   	GaussianBlur(grayframe, grayframe, Size(3,3),0,0);
