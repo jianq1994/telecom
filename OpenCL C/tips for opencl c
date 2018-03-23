@@ -1,0 +1,1 @@
+__kernel void matmul(__global const int N***wrong, with global you can only pass pointer***)
